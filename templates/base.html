@@ -1,0 +1,227 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoVoice</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="{% static 'css/blog.css' %}" rel="stylesheet">
+
+    <style>
+        :root {
+            --ink: #0d0d0d;
+            --paper: #f7f4ef;
+            --accent: #c8963e;
+            --accent2: #2d5a6e;
+            --muted: #888;
+            --card-radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--paper);
+            color: var(--ink);
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 300;
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ── */
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(247,244,239,0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+
+        .header-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .site-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--ink);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .site-logo span { color: var(--accent); }
+
+        .search-wrap {
+            flex: 1;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        .search-wrap form {
+            display: flex;
+            background: #fff;
+            border: 1.5px solid rgba(0,0,0,0.12);
+            border-radius: 50px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+        .search-wrap form:focus-within { border-color: var(--accent); }
+
+        .search-wrap input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 0.55rem 1.2rem;
+            background: transparent;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            color: var(--ink);
+        }
+        .search-wrap button {
+            border: none;
+            background: var(--accent);
+            color: #fff;
+            padding: 0 1.2rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-family: 'DM Sans', sans-serif;
+            transition: background 0.2s;
+        }
+        .search-wrap button:hover { background: #b07d2c; }
+
+        .header-auth {
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .btn-auth {
+            display: inline-block;
+            padding: 0.45rem 1.1rem;
+            border-radius: 50px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.83rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-auth.login { background: var(--ink); color: #fff; }
+        .btn-auth.login:hover { background: #333; }
+        .btn-auth.register { border: 1.5px solid var(--ink); color: var(--ink); }
+        .btn-auth.register:hover { background: var(--ink); color: #fff; }
+        .btn-auth.dash { color: var(--accent2); font-weight: 500; }
+        .btn-auth.out { color: var(--muted); }
+        .btn-auth.dash:hover, .btn-auth.out:hover { color: var(--ink); }
+
+        /* ── CATEGORY NAV ── */
+        .cat-nav {
+            background: var(--ink);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .cat-nav::-webkit-scrollbar { display: none; }
+
+        .cat-nav-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            gap: 0;
+        }
+
+        .cat-nav a {
+            display: inline-block;
+            padding: 0.75rem 1.3rem;
+            color: rgba(255,255,255,0.65);
+            text-decoration: none;
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            white-space: nowrap;
+            transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+        }
+        .cat-nav a:first-child { color: var(--accent); border-bottom-color: var(--accent); }
+        .cat-nav a:hover { color: #fff; border-bottom-color: rgba(255,255,255,0.4); }
+
+        /* ── MAIN CONTENT WRAPPER ── */
+        .site-main {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2.5rem 2rem 4rem;
+        }
+
+        /* ── FOOTER ── */
+        .site-footer {
+            background: var(--ink);
+            color: rgba(255,255,255,0.5);
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.85rem;
+        }
+        .site-footer a { color: var(--accent); text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="site-logo" href="/">Eco<span>.</span>Voice</a>
+
+            <div class="search-wrap">
+                <form action="{% url 'search' %}" method="GET">
+                    <input name="keyword" value="{{keyword}}" type="text" placeholder="Search Complain…" />
+                    <button type="submit"><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+
+            <div class="header-auth">
+                {% if not user.is_authenticated %}
+                    <a class="btn-auth login" href="{% url 'login' %}">Log in</a>
+                    <a class="btn-auth register" href="{% url 'register' %}">Register</a>
+                {% else %}
+                    <a class="btn-auth dash" href="{% url 'dashboard' %}"><i class="fas fa-th-large"></i> complain-Dashboard</a>
+                    <a class="btn-auth out" href="{% url 'logout' %}">Log out</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <nav class="cat-nav">
+        <div class="cat-nav-inner">
+            <a href="{% url 'home' %}">Home</a>
+            {% for cat in categories %}
+            <a href="{% url 'complains:posts_by_category' cat.id %}">{{ cat.Category_name }}</a>
+            {% endfor %}
+        </div>
+    </nav>
+
+    <main class="site-main">
+        {% block content %}
+        
+        
+        
+        
+        {% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <p>Crafted with &#10084 byte robbers </p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,286 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    .article-wrap {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 3rem;
+        align-items: start;
+    }
+
+    /* ── ARTICLE HEADER ── */
+    .article-cat {
+        display: inline-block;
+        background: var(--accent);
+        color: #fff;
+        font-size: 0.72rem;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 0.3rem 0.9rem;
+        border-radius: 50px;
+        text-decoration: none;
+        margin-bottom: 1.2rem;
+    }
+
+    .article-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(2rem, 5vw, 3.2rem);
+        font-weight: 700;
+        line-height: 1.15;
+        color: var(--ink);
+        margin-bottom: 1.2rem;
+        letter-spacing: -0.5px;
+    }
+
+    .article-meta {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        flex-wrap: wrap;
+        padding-bottom: 1.2rem;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+    .meta-author {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+    .author-avatar {
+        width: 38px; height: 38px;
+        border-radius: 50%;
+        background: var(--accent2);
+        display: flex; align-items: center; justify-content: center;
+        color: #fff;
+        font-size: 0.95rem;
+        font-weight: 600;
+        flex-shrink: 0;
+        text-transform: uppercase;
+    }
+    .author-name { font-size: 0.9rem; font-weight: 500; color: var(--ink); }
+    .author-date { font-size: 0.78rem; color: var(--muted); }
+    .meta-divider { width: 1px; height: 28px; background: rgba(0,0,0,0.12); }
+    .meta-tag { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--muted); }
+
+    /* ── HERO IMAGE ── */
+    .article-hero {
+        border-radius: 14px;
+        overflow: hidden;
+        margin-bottom: 2.5rem;
+        aspect-ratio: 16/7;
+        background: #1a2a3a;
+        box-shadow: 0 12px 48px rgba(0,0,0,0.15);
+    }
+    .article-hero img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.6s ease;
+    }
+    .article-hero:hover img { transform: scale(1.02); }
+
+    /* ── ARTICLE BODY ── */
+    .article-lead {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.35rem;
+        font-style: italic;
+        color: #333;
+        border-left: 3px solid var(--accent);
+        padding-left: 1.5rem;
+        margin-bottom: 2rem;
+        line-height: 1.7;
+    }
+    .article-content {
+        font-family: 'DM Sans', sans-serif;
+        font-size: 1rem;
+        line-height: 1.9;
+        color: #2a2a2a;
+        font-weight: 300;
+    }
+
+    /* ── SHARE BAR ── */
+    .share-bar {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.5rem 0;
+        border-top: 1px solid rgba(0,0,0,0.1);
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        margin-top: 2.5rem;
+    }
+    .share-label {
+        font-size: 0.8rem;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+    }
+    .share-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        background: rgba(0,0,0,0.06);
+        color: var(--ink);
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    .share-btn:hover { transform: scale(1.1); }
+    .share-btn.tw:hover { background: #1da1f2; color: #fff; }
+    .share-btn.fb:hover { background: #1877f2; color: #fff; }
+    .share-btn.li:hover { background: #0a66c2; color: #fff; }
+    .share-btn.wa:hover { background: #25d366; color: #fff; }
+
+    /* ════ SIDEBAR ════ */
+    .sidebar { position: sticky; top: 100px; }
+
+    .sidebar-card {
+        background: #fff;
+        border-radius: var(--card-radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(0,0,0,0.07);
+        box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+    .sidebar-card-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 1.1rem;
+        padding-bottom: 0.7rem;
+        border-bottom: 2px solid var(--accent);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .sidebar-card-title i { color: var(--accent); font-size: 0.9rem; }
+
+    .cat-list { list-style: none; padding: 0; margin: 0; }
+    .cat-list li { border-bottom: 1px solid rgba(0,0,0,0.06); }
+    .cat-list li:last-child { border-bottom: none; }
+    .cat-list a {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.65rem 0;
+        font-size: 0.9rem;
+        color: #333;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    .cat-list a:hover { color: var(--accent); }
+    .cat-list a i { font-size: 0.7rem; color: var(--muted); transition: transform 0.2s, color 0.2s; }
+    .cat-list a:hover i { transform: translateX(3px); color: var(--accent); }
+
+    .follow-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .follow-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.65rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-decoration: none;
+        color: #fff;
+        transition: opacity 0.2s, transform 0.2s;
+    }
+    .follow-btn:hover { opacity: 0.88; transform: translateY(-2px); color: #fff; }
+    .follow-btn.twitter   { background: #1da1f2; }
+    .follow-btn.facebook  { background: #1877f2; }
+    .follow-btn.instagram { background: linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); }
+    .follow-btn.linkedin  { background: #0a66c2; }
+
+    @media (max-width: 900px) {
+        .article-wrap { grid-template-columns: 1fr; }
+        .sidebar { position: static; }
+    }
+</style>
+
+
+<div class="article-wrap">
+
+    <!-- ════ MAIN ARTICLE ════ -->
+    <article>
+        <header>
+            <a class="article-cat" href="#">{{ single_blog.category }}</a>
+
+            <h1 class="article-title">{{ single_blog.title }}</h1>
+
+            <div class="article-meta">
+                <div class="meta-author">
+                    <div class="author-avatar">{{ single_blog.author }}</div>
+                    <div>
+                        <div class="author-name">{{ single_blog.author }}</div>
+                        <div class="author-date">{{ single_blog.created_at }}</div>
+                    </div>
+                </div>
+                <div class="meta-divider"></div>
+                <span class="meta-tag">
+                    <i class="far fa-clock"></i> {{ single_blog.created_at|timesince }} ago
+                </span>
+            </div>
+        </header>
+
+        <!-- Hero Image -->
+        <div class="article-hero">
+            <img src="{{ single_blog.featured_image.url }}" alt="{{ single_blog.title }}" />
+        </div>
+
+        <!-- Body -->
+        <p class="article-lead">{{ single_blog.short_description }}</p>
+        <div class="article-content">
+            <p>{{ single_blog.complain_body }}</p>
+        </div>
+
+        <!-- Share Bar -->
+        <!-- <div class="share-bar">
+            <span class="share-label">Share</span>
+            <a class="share-btn tw" href="https://twitter.com/intent/tweet?text={{ single_blog.title }}" target="_blank"><i class="fab fa-twitter"></i></a>
+            <a class="share-btn fb" href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a class="share-btn li" href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri }}" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+            <a class="share-btn wa" href="https://wa.me/?text={{ single_blog.title }}" target="_blank"><i class="fab fa-whatsapp"></i></a>
+        </div> -->
+    </article>
+
+
+    <!-- ════ SIDEBAR ════ -->
+    <aside class="sidebar">
+
+        <!-- About -->
+        <div class="sidebar-card">
+            <h4 class="sidebar-card-title"><i class="fas fa-pen-nib"></i> About</h4>
+            <p style="font-size:0.9rem;color:#555;line-height:1.7;">
+                As an Indian we all try to clean our motherland because of that we take an initiative under swachcha Bharat abhiyan,to display the poor condition of our motherland and improve the condition through social voting.
+            </p>
+        </div>
+
+        <!-- Categories -->
+        <div class="sidebar-card">
+            <h4 class="sidebar-card-title"><i class="fas fa-layer-group"></i> Categories</h4>
+            <ul class="cat-list">
+                {% for cat in categories %}
+                <li>
+                    <a href="{% url 'complains:posts_by_category' cat.id %}">
+                        {{ cat.Category_name }}
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Follow Us -->
+       
+        </div>
+
+    </aside>
+</div>
+
+{% endblock %}

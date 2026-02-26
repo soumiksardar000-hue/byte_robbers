@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<style>
+    .auth-wrap {
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+    }
+
+    .auth-card {
+        width: 100%;
+        max-width: 500px;
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 8px 48px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06);
+        overflow: hidden;
+    }
+
+    /* ── TOP ACCENT BAND ── */
+    .auth-card-top {
+        background: var(--ink);
+        padding: 2.5rem 2.5rem 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .auth-card-top::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at 10% 80%, rgba(200,150,62,0.3) 0%, transparent 60%);
+    }
+    .auth-card-top .brand {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #fff;
+        text-decoration: none;
+        display: block;
+        margin-bottom: 1.2rem;
+        position: relative;
+    }
+    .auth-card-top .brand span { color: var(--accent); }
+
+    .auth-card-top h2 {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.1;
+        position: relative;
+        margin: 0;
+    }
+    .auth-card-top p {
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.5);
+        margin-top: 0.5rem;
+        position: relative;
+    }
+    .auth-card-top .deco {
+        position: absolute;
+        right: 1.5rem;
+        bottom: -1rem;
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 8rem;
+        font-weight: 700;
+        color: rgba(255,255,255,0.05);
+        line-height: 1;
+        pointer-events: none;
+        user-select: none;
+    }
+
+    /* ── FORM BODY ── */
+    .auth-card-body {
+        padding: 2.2rem 2.5rem 2.5rem;
+    }
+
+    .auth-card-body .form-group,
+    .auth-card-body .mb-3 {
+        margin-bottom: 1.2rem !important;
+    }
+
+    .auth-card-body label {
+        font-size: 0.78rem !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.08em !important;
+        text-transform: uppercase !important;
+        color: var(--muted) !important;
+        margin-bottom: 0.4rem !important;
+        display: block;
+    }
+
+    .auth-card-body input[type="text"],
+    .auth-card-body input[type="email"],
+    .auth-card-body input[type="password"] {
+        width: 100% !important;
+        padding: 0.75rem 1rem !important;
+        border: 1.5px solid rgba(0,0,0,0.12) !important;
+        border-radius: 10px !important;
+        font-family: 'DM Sans', sans-serif !important;
+        font-size: 0.95rem !important;
+        color: var(--ink) !important;
+        background: #fafafa !important;
+        transition: border-color 0.2s, box-shadow 0.2s !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    .auth-card-body input:focus {
+        border-color: var(--accent) !important;
+        background: #fff !important;
+        box-shadow: 0 0 0 3px rgba(200,150,62,0.12) !important;
+    }
+
+    /* validation error styling */
+    .auth-card-body .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 0.3rem 0 0;
+    }
+    .auth-card-body .errorlist li {
+        font-size: 0.78rem;
+        color: #e05252;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    .auth-card-body .errorlist li::before {
+        content: '!';
+        width: 14px; height: 14px;
+        background: #e05252;
+        color: #fff;
+        border-radius: 50%;
+        font-size: 0.65rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    /* password help text */
+    .auth-card-body .helptext,
+    .auth-card-body small {
+        font-size: 0.75rem !important;
+        color: var(--muted) !important;
+        line-height: 1.5 !important;
+        display: block;
+        margin-top: 0.35rem;
+    }
+
+    /* ── SUBMIT ── */
+    .auth-submit {
+        width: 100%;
+        padding: 0.85rem;
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        cursor: pointer;
+        margin-top: 0.5rem;
+        transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+        box-shadow: 0 4px 0 #8a5e20;
+    }
+    .auth-submit:hover {
+        background: #b07d2c;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 0 #8a5e20;
+    }
+    .auth-submit:active {
+        transform: translateY(1px);
+        box-shadow: 0 2px 0 #8a5e20;
+    }
+
+    /* ── DIVIDER & FOOTER ── */
+    .auth-divider {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin: 1.5rem 0;
+        color: rgba(0,0,0,0.2);
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+    .auth-divider::before,
+    .auth-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: rgba(0,0,0,0.1);
+    }
+
+    .auth-footer {
+        text-align: center;
+        font-size: 0.85rem;
+        color: var(--muted);
+    }
+    .auth-footer a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .auth-footer a:hover { text-decoration: underline; }
+
+    /* ── PERKS ROW ── */
+    .auth-perks {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-bottom: 1.8rem;
+        flex-wrap: wrap;
+    }
+    .auth-perk {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.78rem;
+        color: var(--muted);
+    }
+    .auth-perk i { color: var(--accent); font-size: 0.85rem; }
+</style>
+
+
+<div class="auth-wrap">
+    <div class="auth-card">
+
+        <!-- Top Band -->
+        <div class="auth-card-top">
+            <a class="brand" href="{% url 'home' %}">Django<span>.</span>Blog</a>
+            <h2>Create an account</h2>
+            <p>Join the community and start writing today.</p>
+            <span class="deco">R</span>
+        </div>
+
+        <!-- Form -->
+        <div class="auth-card-body">
+
+            <!-- Perks -->
+            <div class="auth-perks">
+                <span class="auth-perk"><i class="fas fa-pen-nib"></i> Publish articles</span>
+                <span class="auth-perk"><i class="fas fa-layer-group"></i> Browse categories</span>
+                <span class="auth-perk"><i class="fas fa-bookmark"></i> Save posts</span>
+            </div>
+
+            <form action="{% url 'register' %}" method="POST">
+                {% csrf_token %}
+                {{ form|crispy }}
+
+                <button type="submit" class="auth-submit">
+                    Create account &nbsp; <i class="fas fa-arrow-right" style="font-size:0.8rem"></i>
+                </button>
+            </form>
+
+            <div class="auth-divider">or</div>
+
+            <div class="auth-footer">
+                Already have an account? <a href="{% url 'login' %}">Sign in</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

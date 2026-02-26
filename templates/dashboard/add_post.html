@@ -1,0 +1,441 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<style>
+    /* ── DASHBOARD LAYOUT ── */
+    .dash-wrap {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 2rem;
+        align-items: start;
+    }
+
+    /* ════════════════════════════
+       SIDEBAR (same as dashboard)
+    ════════════════════════════ */
+    .dash-sidebar {
+        position: sticky;
+        top: 90px;
+        background: var(--ink);
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    .sidebar-user {
+        padding: 1.8rem 1.5rem 1.4rem;
+        border-bottom: 1px solid rgba(255,255,255,0.07);
+        position: relative;
+        overflow: hidden;
+    }
+    .sidebar-user::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at 100% 0%, rgba(200,150,62,0.25) 0%, transparent 65%);
+    }
+    .user-avatar-lg {
+        width: 52px; height: 52px;
+        border-radius: 50%;
+        background: var(--accent);
+        display: flex; align-items: center; justify-content: center;
+        color: #fff;
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+        position: relative;
+    }
+    .sidebar-user-name { font-size: 0.95rem; font-weight: 500; color: #fff; position: relative; }
+    .sidebar-user-role { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 0.15rem; position: relative; }
+
+    .sidebar-nav { padding: 1rem 0; }
+    .sidebar-nav-label {
+        font-size: 0.65rem;
+        font-weight: 500;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.25);
+        padding: 0.5rem 1.5rem 0.3rem;
+    }
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.7rem 1.5rem;
+        font-size: 0.88rem;
+        color: rgba(255,255,255,0.6);
+        text-decoration: none;
+        transition: all 0.2s;
+        border-left: 2px solid transparent;
+    }
+    .sidebar-nav a:hover,
+    .sidebar-nav a.active {
+        color: #fff;
+        background: rgba(255,255,255,0.05);
+        border-left-color: var(--accent);
+    }
+    .sidebar-nav a i {
+        width: 16px;
+        font-size: 0.85rem;
+        text-align: center;
+        color: rgba(255,255,255,0.35);
+        transition: color 0.2s;
+    }
+    .sidebar-nav a:hover i,
+    .sidebar-nav a.active i { color: var(--accent); }
+    .sidebar-bottom {
+        padding: 1rem 1.5rem 1.5rem;
+        border-top: 1px solid rgba(255,255,255,0.07);
+    }
+    .sidebar-bottom a {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.4);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    .sidebar-bottom a:hover { color: #e05252; }
+
+    /* ════════════════════════════
+       MAIN CONTENT
+    ════════════════════════════ */
+    .dash-main {}
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        padding-bottom: 1.2rem;
+        border-bottom: 1px solid rgba(0,0,0,0.08);
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    .page-header-left h1 {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--ink);
+        line-height: 1;
+    }
+    .page-header-left p {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-top: 0.3rem;
+    }
+    .breadcrumb-trail {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.78rem;
+        color: var(--muted);
+    }
+    .breadcrumb-trail a { color: var(--accent); text-decoration: none; }
+    .breadcrumb-trail a:hover { text-decoration: underline; }
+    .breadcrumb-trail i { font-size: 0.55rem; }
+
+    /* ── FORM CARD ── */
+    .form-card {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid rgba(0,0,0,0.06);
+        box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+
+    .form-card-header {
+        background: linear-gradient(135deg, var(--ink) 0%, #1e1e1e 100%);
+        padding: 1.4rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .form-card-header::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at 100% 50%, rgba(200,150,62,0.2) 0%, transparent 60%);
+    }
+    .form-card-header i {
+        font-size: 1rem;
+        color: var(--accent);
+        position: relative;
+    }
+    .form-card-header span {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: rgba(255,255,255,0.8);
+        position: relative;
+        letter-spacing: 0.04em;
+    }
+
+    .form-card-body {
+        padding: 2rem;
+    }
+
+    /* ── CRISPY FORM OVERRIDES ── */
+    .form-card-body .form-group,
+    .form-card-body .mb-3 {
+        margin-bottom: 1.4rem !important;
+    }
+
+    .form-card-body label {
+        font-size: 0.78rem !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.08em !important;
+        text-transform: uppercase !important;
+        color: var(--muted) !important;
+        margin-bottom: 0.45rem !important;
+        display: block;
+    }
+
+    .form-card-body input[type="text"],
+    .form-card-body input[type="email"],
+    .form-card-body input[type="url"],
+    .form-card-body input[type="number"],
+    .form-card-body textarea,
+    .form-card-body select {
+        width: 100% !important;
+        padding: 0.75rem 1rem !important;
+        border: 1.5px solid rgba(0,0,0,0.12) !important;
+        border-radius: 10px !important;
+        font-family: 'DM Sans', sans-serif !important;
+        font-size: 0.95rem !important;
+        color: var(--ink) !important;
+        background: #fafafa !important;
+        transition: border-color 0.2s, box-shadow 0.2s !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    .form-card-body textarea {
+        min-height: 160px !important;
+        resize: vertical !important;
+    }
+    .form-card-body select {
+        appearance: none !important;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 1rem center !important;
+        background-color: #fafafa !important;
+        padding-right: 2.5rem !important;
+    }
+    .form-card-body input:focus,
+    .form-card-body textarea:focus,
+    .form-card-body select:focus {
+        border-color: var(--accent) !important;
+        background: #fff !important;
+        box-shadow: 0 0 0 3px rgba(200,150,62,0.12) !important;
+    }
+
+    /* File input */
+    .form-card-body input[type="file"] {
+        width: 100% !important;
+        padding: 0.6rem 1rem !important;
+        border: 1.5px dashed rgba(0,0,0,0.15) !important;
+        border-radius: 10px !important;
+        font-size: 0.88rem !important;
+        color: var(--muted) !important;
+        background: #fafafa !important;
+        cursor: pointer !important;
+        transition: border-color 0.2s !important;
+    }
+    .form-card-body input[type="file"]:hover {
+        border-color: var(--accent) !important;
+    }
+
+    /* Checkbox */
+    .form-card-body input[type="checkbox"] {
+        width: 16px !important;
+        height: 16px !important;
+        accent-color: var(--accent) !important;
+        margin-right: 0.4rem !important;
+    }
+
+    /* Error text */
+    .form-card-body .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 0.3rem 0 0;
+    }
+    .form-card-body .errorlist li {
+        font-size: 0.78rem;
+        color: #e05252;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    .form-card-body .errorlist li::before {
+        content: '!';
+        width: 14px; height: 14px;
+        background: #e05252;
+        color: #fff;
+        border-radius: 50%;
+        font-size: 0.65rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    /* Help text */
+    .form-card-body .helptext,
+    .form-card-body small.text-muted {
+        font-size: 0.75rem !important;
+        color: var(--muted) !important;
+        line-height: 1.5 !important;
+        display: block;
+        margin-top: 0.3rem;
+    }
+
+    /* ── FORM ACTIONS ── */
+    .form-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(0,0,0,0.07);
+        margin-top: 0.5rem;
+        flex-wrap: wrap;
+    }
+    .btn-submit {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        padding: 0.8rem 2rem;
+        border-radius: 10px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+        box-shadow: 0 4px 0 #8a5e20;
+    }
+    .btn-submit:hover {
+        background: #b07d2c;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 0 #8a5e20;
+    }
+    .btn-submit:active {
+        transform: translateY(1px);
+        box-shadow: 0 2px 0 #8a5e20;
+    }
+    .btn-cancel {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: transparent;
+        color: var(--muted);
+        border: 1.5px solid rgba(0,0,0,0.12);
+        padding: 0.8rem 1.6rem;
+        border-radius: 10px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 400;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    .btn-cancel:hover { border-color: var(--ink); color: var(--ink); }
+
+    @media (max-width: 960px) {
+        .dash-wrap { grid-template-columns: 1fr; }
+        .dash-sidebar { position: static; }
+    }
+    @media (max-width: 560px) {
+        .form-card-body { padding: 1.2rem; }
+    }
+</style>
+
+
+<div class="dash-wrap">
+
+    <!-- ════ SIDEBAR ════ -->
+    <aside class="dash-sidebar">
+        <div class="sidebar-user">
+            <div class="user-avatar-lg">{{ user }}</div>
+            <div class="sidebar-user-name">{{ user }}</div>
+            <div class="sidebar-user-role">Author</div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-nav-label">Main</div>
+            <a href="{% url 'dashboard' %}">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+            <a href="{% url 'home' %}">
+                <i class="fas fa-globe"></i> View Site
+            </a>
+
+            <div class="sidebar-nav-label" style="margin-top:0.5rem;">Content</div>
+            <a href="{% url 'posts' %}">
+                <i class="fas fa-newspaper"></i> All complains
+            </a>
+            <a href="{% url 'add_post' %}" class="active">
+                <i class="fas fa-plus-circle"></i> New complain
+            </a>
+            <a href="{% url 'categories' %}">
+                <i class="fas fa-layer-group"></i> problems_type
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a href="{% url 'logout' %}">
+                <i class="fas fa-sign-out-alt"></i> Sign out
+            </a>
+        </div>
+    </aside>
+
+
+    <!-- ════ MAIN ════ -->
+    <div class="dash-main">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-header-left">
+                <div class="breadcrumb-trail" style="margin-bottom:0.5rem;">
+                    <a href="{% url 'dashboard' %}">Dashboard</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>New complain</span>
+                </div>
+                <h1>Add New complain</h1>
+                <p>Fill in the details below to publish a new article.</p>
+            </div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="form-card">
+            <div class="form-card-header">
+                <i class="fas fa-pen-nib"></i>
+                <span>Complain Details</span>
+            </div>
+            <div class="form-card-body">
+                <form action="{% url 'add_post' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-paper-plane"></i> Publish Problem to the public
+                        </button>
+                        <a href="{% url 'dashboard' %}" class="btn-cancel">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

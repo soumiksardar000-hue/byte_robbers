@@ -1,0 +1,436 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .dash-wrap {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 2rem;
+        align-items: start;
+    }
+
+    /* ════ SIDEBAR ════ */
+    .dash-sidebar {
+        position: sticky;
+        top: 90px;
+        background: var(--ink);
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    .sidebar-user {
+        padding: 1.8rem 1.5rem 1.4rem;
+        border-bottom: 1px solid rgba(255,255,255,0.07);
+        position: relative;
+        overflow: hidden;
+    }
+    .sidebar-user::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at 100% 0%, rgba(200,150,62,0.25) 0%, transparent 65%);
+    }
+    .user-avatar-lg {
+        width: 52px; height: 52px;
+        border-radius: 50%;
+        background: var(--accent);
+        display: flex; align-items: center; justify-content: center;
+        color: #fff;
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+        position: relative;
+    }
+    .sidebar-user-name { font-size: 0.95rem; font-weight: 500; color: #fff; position: relative; }
+    .sidebar-user-role { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 0.15rem; position: relative; }
+
+    .sidebar-nav { padding: 1rem 0; }
+    .sidebar-nav-label {
+        font-size: 0.65rem;
+        font-weight: 500;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.25);
+        padding: 0.5rem 1.5rem 0.3rem;
+    }
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.7rem 1.5rem;
+        font-size: 0.88rem;
+        color: rgba(255,255,255,0.6);
+        text-decoration: none;
+        transition: all 0.2s;
+        border-left: 2px solid transparent;
+    }
+    .sidebar-nav a:hover,
+    .sidebar-nav a.active {
+        color: #fff;
+        background: rgba(255,255,255,0.05);
+        border-left-color: var(--accent);
+    }
+    .sidebar-nav a i {
+        width: 16px;
+        font-size: 0.85rem;
+        text-align: center;
+        color: rgba(255,255,255,0.35);
+        transition: color 0.2s;
+    }
+    .sidebar-nav a:hover i,
+    .sidebar-nav a.active i { color: var(--accent); }
+    .sidebar-bottom {
+        padding: 1rem 1.5rem 1.5rem;
+        border-top: 1px solid rgba(255,255,255,0.07);
+    }
+    .sidebar-bottom a {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.4);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    .sidebar-bottom a:hover { color: #e05252; }
+
+    /* ════ PAGE HEADER ════ */
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        padding-bottom: 1.2rem;
+        border-bottom: 1px solid rgba(0,0,0,0.08);
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    .page-header-left h1 {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--ink);
+        line-height: 1;
+    }
+    .page-header-left p { font-size: 0.85rem; color: var(--muted); margin-top: 0.3rem; }
+    .breadcrumb-trail {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-bottom: 0.5rem;
+    }
+    .breadcrumb-trail a { color: var(--accent); text-decoration: none; }
+    .breadcrumb-trail i { font-size: 0.55rem; }
+
+    .btn-add {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--ink);
+        color: #fff;
+        padding: 0.65rem 1.4rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: background 0.2s, transform 0.15s;
+        white-space: nowrap;
+    }
+    .btn-add:hover { background: var(--accent); color: #fff; transform: translateY(-2px); }
+
+    /* ════ TABLE CARD ════ */
+    .table-card {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid rgba(0,0,0,0.06);
+        box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+
+    .table-card-header {
+        background: linear-gradient(135deg, var(--ink) 0%, #1e1e1e 100%);
+        padding: 1.2rem 1.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+    }
+    .table-card-header::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at 100% 50%, rgba(200,150,62,0.2) 0%, transparent 60%);
+    }
+    .table-card-header-left {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        position: relative;
+    }
+    .table-card-header-left i { color: var(--accent); font-size: 0.9rem; }
+    .table-card-header-left span {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: rgba(255,255,255,0.8);
+        letter-spacing: 0.04em;
+    }
+    .count-badge {
+        background: rgba(255,255,255,0.1);
+        color: rgba(255,255,255,0.7);
+        font-size: 0.72rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 50px;
+        position: relative;
+    }
+
+    /* ── TABLE ── */
+    .cats-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .cats-table thead tr {
+        border-bottom: 1px solid rgba(0,0,0,0.07);
+    }
+    .cats-table thead th {
+        padding: 1rem 1.2rem;
+        font-size: 0.7rem;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        text-align: left;
+        white-space: nowrap;
+    }
+    .cats-table tbody tr {
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        transition: background 0.15s;
+    }
+    .cats-table tbody tr:last-child { border-bottom: none; }
+    .cats-table tbody tr:hover { background: #faf8f4; }
+
+    .cats-table td {
+        padding: 1rem 1.2rem;
+        font-size: 0.88rem;
+        color: #333;
+        vertical-align: middle;
+    }
+
+    .td-counter { color: var(--muted); font-size: 0.78rem; width: 40px; }
+
+    /* category name with icon */
+    .cat-name-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+    }
+    .cat-icon {
+        width: 34px; height: 34px;
+        border-radius: 8px;
+        background: rgba(200,150,62,0.1);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--accent);
+        font-size: 0.8rem;
+        flex-shrink: 0;
+    }
+    .cat-name-text {
+        font-weight: 500;
+        color: var(--ink);
+        font-size: 0.9rem;
+    }
+
+    /* date cell */
+    .td-date { font-size: 0.8rem; color: var(--muted); }
+
+    /* action buttons */
+    .action-btns {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px; height: 32px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        text-decoration: none;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+    }
+    .action-btn.edit {
+        background: rgba(45,90,110,0.08);
+        color: var(--accent2);
+        border-color: rgba(45,90,110,0.15);
+    }
+    .action-btn.edit:hover { background: var(--accent2); color: #fff; border-color: var(--accent2); }
+    .action-btn.delete {
+        background: rgba(224,82,82,0.08);
+        color: #e05252;
+        border-color: rgba(224,82,82,0.15);
+    }
+    .action-btn.delete:hover { background: #e05252; color: #fff; border-color: #e05252; }
+
+    /* ── EMPTY STATE ── */
+    .empty-table {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--muted);
+    }
+    .empty-table i { font-size: 2.5rem; opacity: 0.2; display: block; margin-bottom: 0.8rem; }
+    .empty-table p { font-size: 0.9rem; margin-bottom: 1.2rem; }
+    .empty-table a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: var(--ink);
+        color: #fff;
+        padding: 0.6rem 1.4rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        transition: background 0.2s;
+    }
+    .empty-table a:hover { background: var(--accent); color: #fff; }
+
+    @media (max-width: 960px) {
+        .dash-wrap { grid-template-columns: 1fr; }
+        .dash-sidebar { position: static; }
+        /* hide updated at on smaller screens */
+        .cats-table thead th:nth-child(4),
+        .cats-table td:nth-child(4) { display: none; }
+    }
+    @media (max-width: 600px) {
+        .cats-table thead th:nth-child(3),
+        .cats-table td:nth-child(3) { display: none; }
+    }
+</style>
+
+
+<div class="dash-wrap">
+
+    <!-- ════ SIDEBAR ════ -->
+    <aside class="dash-sidebar">
+        <div class="sidebar-user">
+            <div class="user-avatar-lg">{{ user }}</div>
+            <div class="sidebar-user-name">{{ user }}</div>
+            <div class="sidebar-user-role">Author</div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-nav-label">Main</div>
+            <a href="{% url 'dashboard' %}">
+                <i class="fas fa-th-large"></i>problem Dashboard
+            </a>
+            <a href="{% url 'home' %}">
+                <i class="fas fa-globe"></i> View Site
+            </a>
+
+            <div class="sidebar-nav-label" style="margin-top:0.5rem;">Problem-category</div>
+            <a href="{% url 'posts' %}">
+                <i class="fas fa-newspaper"></i> All complains
+            </a>
+            <a href="{% url 'add_post' %}">
+                <i class="fas fa-plus-circle"></i> New complain
+            </a>
+            <a href="{% url 'categories' %}" class="active">
+                <i class="fas fa-layer-group"></i> Problem-categories
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a href="{% url 'logout' %}">
+                <i class="fas fa-sign-out-alt"></i> Sign out
+            </a>
+        </div>
+    </aside>
+
+
+    <!-- ════ MAIN ════ -->
+    <div class="dash-main">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-header-left">
+                <div class="breadcrumb-trail">
+                    <a href="{% url 'dashboard' %}">Dashboard</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Problem-categories</span>
+                </div>
+                <h1>All Problem-categories</h1>
+                <p>Manage and organise your content categories.</p>
+            </div>
+            <a class="btn-add" href="{% url 'add_category' %}">
+                <i class="fas fa-plus"></i> New Problem-categories
+            </a>
+        </div>
+
+        <!-- Table Card -->
+        <div class="table-card">
+            <div class="table-card-header">
+                <div class="table-card-header-left">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Problem-categories</span>
+                    <span class="count-badge">{{ categories|length }}</span>
+                </div>
+            </div>
+
+            <table class="cats-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Problem-categories Name</th>
+                        <th>Created</th>
+                        <th>Updated</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cat in categories %}
+                    <tr>
+                        <td class="td-counter">{{ forloop.counter }}</td>
+                        <td>
+                            <div class="cat-name-cell">
+                                <div class="cat-icon"><i class="fas fa-tag"></i></div>
+                                <span class="cat-name-text">{{ cat.Category_name }}</span>
+                            </div>
+                        </td>
+                        <td class="td-date">{{ cat.created_at|date:"M d, Y" }}</td>
+                        <td class="td-date">{{ cat.updated_at|date:"M d, Y" }}</td>
+                        <td>
+                            <div class="action-btns">
+                                <a class="action-btn edit" href="{% url 'edit_category' cat.id %}" title="Edit">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                <a class="action-btn delete" href="{% url 'delete_category' cat.id %}" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-table">
+                                <i class="fas fa-layer-group"></i>
+                                <p>No Problem-categories yet. Create your first one!</p>
+                                <a href="{% url 'add_category' %}">
+                                    <i class="fas fa-plus"></i> Add First Problem-categories
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
