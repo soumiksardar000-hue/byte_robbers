@@ -37,7 +37,7 @@ if raw_allowed:
     ALLOWED_HOSTS = [h.strip() for h in raw_allowed.split(',') if h.strip()]
 else:
     # include common local hosts and allow Render hostname
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'byte-robbers.onrender.com']
+    ALLOWED_HOSTS = ['localhost', '74.220.48.0/24','74.220.56.0/24','127.0.0.1', 'byte-robbers.onrender.com','*']
 
 
 # Application definition
