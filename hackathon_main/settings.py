@@ -138,8 +138,13 @@ STATICFILES_DIRS = [
     BASE_DIR / 'hackathon_main' / 'static',
 ]
 
-# White Noise compression for efficient static file serving
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# White Noise compression for efficient static file serving (no manifest required)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
+# WhiteNoise caching - cache for 1 year since hashed filenames are immutable
+if not DEBUG:
+    WHITENOISE_AUTOREFRESH = False
+    WHITENOISE_USE_FINDERS = True
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
